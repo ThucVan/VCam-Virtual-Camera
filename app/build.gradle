@@ -1,14 +1,16 @@
 plugins {
     id 'com.android.application'
+    id 'kotlin-parcelize'
+    id 'kotlin-android'
 }
 
 android {
-    compileSdk 31
+    compileSdk 33
 
     defaultConfig {
         applicationId "com.example.vcam"
         minSdk 21
-        targetSdk 26
+        targetSdk 33
         versionCode 28
         versionName "4.4"
 
@@ -25,9 +27,21 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
+    kotlinOptions {
+        jvmTarget = '17'
+    }
 }
 
 dependencies {
+    implementation 'androidx.core:core-ktx:1.10.1'
+    implementation 'androidx.appcompat:appcompat:1.6.1'
+    implementation 'com.google.android.material:material:1.9.0'
+    implementation "com.intuit.ssp:ssp-android:1.1.0"
+    implementation "com.intuit.sdp:sdp-android:1.1.0"
+
+    // Glide
+    implementation "com.github.bumptech.glide:glide:4.15.1"
+
     compileOnly 'de.robv.android.xposed:api:82'
     compileOnly 'de.robv.android.xposed:api:82:sources'
 

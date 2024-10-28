@@ -18,8 +18,14 @@ import android.widget.CompoundButton;
 import android.widget.Switch;
 import android.widget.Toast;
 
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.example.vcam.model.MediaModel;
+import com.example.vcam.utils.MediaUtils;
+
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 
 public class MainActivity extends Activity {
 
@@ -28,6 +34,9 @@ public class MainActivity extends Activity {
     private Switch play_sound_switch;
     private Switch force_private_dir;
     private Switch disable_toast_switch;
+
+    private RecyclerView rcvVideo;
+    private ListVideoAdapter listVideoAdapter;
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
@@ -61,8 +70,13 @@ public class MainActivity extends Activity {
         play_sound_switch = findViewById(R.id.switch3);
         force_private_dir = findViewById(R.id.switch4);
         disable_toast_switch = findViewById(R.id.switch5);
+        rcvVideo = findViewById(R.id.rcv_video);
 
+        List<MediaModel> mediaModelList = new MediaUtils().getAllVideoFromPath(this, "/storage/emulated/0/DCIM/Camera1/", 0);
 
+        listVideoAdapter = new ListVideoAdapter(MainActivity.this, mediaModelList);
+
+        rcvVideo.setAdapter(listVideoAdapter);
 
         sync_statue_with_files();
 

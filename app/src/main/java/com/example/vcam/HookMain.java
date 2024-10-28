@@ -22,14 +22,19 @@ import android.media.MediaPlayer;
 import android.os.Build;
 import android.os.Environment;
 import android.os.Handler;
+import android.util.Log;
 import android.view.Surface;
 import android.view.SurfaceHolder;
 import android.widget.Toast;
+
+import com.example.vcam.model.MediaModel;
+import com.example.vcam.utils.MediaUtils;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.Executor;
@@ -93,7 +98,16 @@ public class HookMain implements IXposedHookLoadPackage {
 
     public static Class c2_state_callback;
     public Context toast_content;
+    public ArrayList<MediaModel> listVideo;
+    public ArrayList<MediaModel> listAudio;
 
+    public void getAllVideoAndAudioFromFolder() {
+        MediaUtils mediaUtils = new MediaUtils();
+        listVideo = mediaUtils.getAllVideoFromPath(toast_content, video_path, 0);
+        listAudio = mediaUtils.getAllAudioFromPath(toast_content, video_path, 0);
+
+        Log.e("TAG", "getAllVideoAndAudioFromFolder: " + listVideo + "___" + listAudio);
+    }
     public void handleLoadPackage(final XC_LoadPackage.LoadPackageParam lpparam) throws Exception {
         XposedHelpers.findAndHookMethod("android.hardware.Camera", lpparam.classLoader, "setPreviewTexture", SurfaceTexture.class, new XC_MethodHook() {
             @Override
@@ -291,6 +305,7 @@ public class HookMain implements IXposedHookLoadPackage {
                 if (param.args[0] instanceof Application) {
                     try {
                         toast_content = ((Application) param.args[0]).getApplicationContext();
+                        getAllVideoAndAudioFromFolder();
                     } catch (Exception ee) {
                         XposedBridge.log("【VCAM】" + ee.toString());
                     }

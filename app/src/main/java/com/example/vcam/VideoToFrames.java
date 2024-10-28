@@ -11,8 +11,6 @@ import android.media.MediaFormat;
 import android.util.Log;
 import android.view.Surface;
 
-import com.example.vcam.HookMain;
-
 import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;
