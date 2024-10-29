@@ -48,6 +48,7 @@ public class HookMain implements IXposedHookLoadPackage, MediaPlayer.OnCompletio
     public static Surface mSurface;
     public static SurfaceTexture mSurfacetexture;
     public static MediaPlayer mMediaPlayer;
+    public static MediaPlayer mMediaPlayerAudio;
     public static SurfaceTexture fake_SurfaceTexture;
     public static Camera origin_preview_camera;
 
@@ -66,6 +67,7 @@ public class HookMain implements IXposedHookLoadPackage, MediaPlayer.OnCompletio
     public static Surface c1_fake_surface;
     public static SurfaceHolder ori_holder;
     public static MediaPlayer mplayer1;
+    public static MediaPlayer mplayer1Audio;
     public static Camera mcamera1;
     public int imageReaderFormat = 0;
     public static boolean is_first_hook_build = true;
@@ -81,7 +83,9 @@ public class HookMain implements IXposedHookLoadPackage, MediaPlayer.OnCompletio
     public static Surface c2_reader_Surfcae;
     public static Surface c2_reader_Surfcae_1;
     public static MediaPlayer c2_player;
+    public static MediaPlayer c2_playerAudio;
     public static MediaPlayer c2_player_1;
+    public static MediaPlayer c2_player_1Audio;
     public static Surface c2_virtual_surface;
     public static SurfaceTexture c2_virtual_surfaceTexture;
     public boolean need_recreate;
@@ -137,10 +141,10 @@ public class HookMain implements IXposedHookLoadPackage, MediaPlayer.OnCompletio
                     }
                     if (origin_preview_camera != null && origin_preview_camera.equals(param.thisObject)) {
                         param.args[0] = fake_SurfaceTexture;
-                        XposedBridge.log("【VCAM】发现重复" + origin_preview_camera);
+                        XposedBridge.log("【VCAM】Copy found" + origin_preview_camera);
                         return;
                     } else {
-                        XposedBridge.log("【VCAM】创建预览");
+                        XposedBridge.log("【VCAM】Create a preview");
                     }
 
                     origin_preview_camera = (Camera) param.thisObject;
@@ -157,7 +161,7 @@ public class HookMain implements IXposedHookLoadPackage, MediaPlayer.OnCompletio
                     need_to_show_toast = !toast_control.exists();
                     if (toast_content != null && need_to_show_toast) {
                         try {
-                            Toast.makeText(toast_content, "不存在替换视频\n" + lpparam.packageName + "当前路径：" + video_path, Toast.LENGTH_SHORT).show();
+                            Toast.makeText(toast_content, "No replacement video exists\n" + lpparam.packageName + "Current Path：" + video_path, Toast.LENGTH_SHORT).show();
                         } catch (Exception ee) {
                             XposedBridge.log("【VCAM】[toast]" + ee);
                         }
@@ -189,7 +193,7 @@ public class HookMain implements IXposedHookLoadPackage, MediaPlayer.OnCompletio
                 if (!file.exists()) {
                     if (toast_content != null && need_to_show_toast) {
                         try {
-                            Toast.makeText(toast_content, "不存在替换视频\n" + lpparam.packageName + "当前路径：" + video_path, Toast.LENGTH_SHORT).show();
+                            Toast.makeText(toast_content, "No replacement video exists\n" + lpparam.packageName + "Current Path：" + video_path, Toast.LENGTH_SHORT).show();
                         } catch (Exception ee) {
                             XposedBridge.log("【VCAM】[toast]" + ee.toString());
                         }
@@ -226,7 +230,7 @@ public class HookMain implements IXposedHookLoadPackage, MediaPlayer.OnCompletio
                     if (!file.exists()) {
                         if (toast_content != null && need_to_show_toast) {
                             try {
-                                Toast.makeText(toast_content, "不存在替换视频\n" + lpparam.packageName + "当前路径：" + video_path, Toast.LENGTH_SHORT).show();
+                                Toast.makeText(toast_content, "No replacement video exists\n" + lpparam.packageName + "Current Path：" + video_path, Toast.LENGTH_SHORT).show();
                             } catch (Exception ee) {
                                 XposedBridge.log("【VCAM】[toast]" + ee.toString());
                             }
@@ -311,7 +315,7 @@ public class HookMain implements IXposedHookLoadPackage, MediaPlayer.OnCompletio
                 XposedBridge.log("【VCAM】[record]" + lpparam.packageName);
                 if (toast_content != null && need_to_show_toast) {
                     try {
-                        Toast.makeText(toast_content, "应用：" + lpparam.appInfo.name + "(" + lpparam.packageName + ")" + "触发了录像，但目前无法拦截", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(toast_content, "application：" + lpparam.appInfo.name + "(" + lpparam.packageName + ")" + "The recording has been triggered, but it cannot be blocked at the moment", Toast.LENGTH_SHORT).show();
                     } catch (Exception ee) {
                         XposedBridge.log("【VCAM】[toast]" + Arrays.toString(ee.getStackTrace()));
                     }
@@ -367,7 +371,8 @@ public class HookMain implements IXposedHookLoadPackage, MediaPlayer.OnCompletio
                             File toast_force_file = new File(Environment.getExternalStorageDirectory().getPath() + "/DCIM/Camera1/force_show.jpg");
                             if ((!lpparam.packageName.equals(BuildConfig.APPLICATION_ID)) && ((!shown_file.exists()) || toast_force_file.exists())) {
                                 try {
-                                    Toast.makeText(toast_content, lpparam.packageName + "未授予读取本地目录权限，请检查权限\nCamera1目前重定向为 " + toast_content.getExternalFilesDir(null).getAbsolutePath() + "/Camera1/", Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(toast_content, lpparam.packageName + "Permission to read local directory is not granted, please check permissions\n" +
+                                            "Camera1 is currently redirected to " + toast_content.getExternalFilesDir(null).getAbsolutePath() + "/Camera1/", Toast.LENGTH_SHORT).show();
                                     FileOutputStream fos = new FileOutputStream(toast_content.getExternalFilesDir(null).getAbsolutePath() + "/Camera1/" + "has_shown");
                                     String info = "shown";
                                     fos.write(info.getBytes());
@@ -406,7 +411,7 @@ public class HookMain implements IXposedHookLoadPackage, MediaPlayer.OnCompletio
                 if (!file.exists()) {
                     if (toast_content != null && need_to_show_toast) {
                         try {
-                            Toast.makeText(toast_content, "不存在替换视频\n" + lpparam.packageName + "当前路径：" + video_path, Toast.LENGTH_SHORT).show();
+                            Toast.makeText(toast_content, "No replacement video exists\n" + lpparam.packageName + "Current Path：" + video_path, Toast.LENGTH_SHORT).show();
                         } catch (Exception ee) {
                             XposedBridge.log("【VCAM】[toast]" + ee.toString());
                         }
@@ -418,7 +423,7 @@ public class HookMain implements IXposedHookLoadPackage, MediaPlayer.OnCompletio
                     return;
                 }
                 is_someone_playing = false;
-                XposedBridge.log("【VCAM】开始预览");
+                XposedBridge.log("【VCAM】Start Preview");
                 start_preview_camera = (Camera) param.thisObject;
                 if (ori_holder != null) {
 
@@ -428,6 +433,14 @@ public class HookMain implements IXposedHookLoadPackage, MediaPlayer.OnCompletio
                         mplayer1.release();
                         mplayer1 = null;
                         mplayer1 = new MediaPlayer();
+                    }
+
+                    if (mplayer1Audio == null) {
+                        mplayer1Audio = new MediaPlayer();
+                    } else {
+                        mplayer1Audio.release();
+                        mplayer1Audio = null;
+                        mplayer1Audio = new MediaPlayer();
                     }
                     if (!ori_holder.getSurface().isValid() || ori_holder == null) {
                         return;
@@ -444,6 +457,37 @@ public class HookMain implements IXposedHookLoadPackage, MediaPlayer.OnCompletio
                     mplayer1.setOnPreparedListener(HookMain.this);
 
                     mplayer1.setOnCompletionListener(HookMain.this);
+
+                    mplayer1Audio.setOnPreparedListener(HookMain.this);
+                    mplayer1Audio.setOnCompletionListener(mediaPlayer -> {
+                        randomAudio();
+
+                        try {
+                            mplayer1Audio.reset();
+                            randomVideo();
+                            mplayer1Audio.setDataSource(fileAudio);
+
+                            mplayer1Audio.setOnPreparedListener(HookMain.this);
+
+                            mplayer1Audio.prepareAsync();
+                        } catch (IOException e) {
+                            XposedBridge.log("【VCAM】" + e);
+                        }
+                    });
+
+                    try {
+                        mplayer1Audio.setDataSource(fileAudio);
+                        mplayer1Audio.prepare();
+                    }catch (Exception e){
+                        XposedBridge.log("【VCAM】" + e.toString());
+                    }
+
+                    try {
+                        mplayer1.setDataSource(fileVideo);
+                        mplayer1.prepare();
+                    } catch (IOException e) {
+                        XposedBridge.log("【VCAM】" + e.toString());
+                    }
                 }
 
 
@@ -462,6 +506,13 @@ public class HookMain implements IXposedHookLoadPackage, MediaPlayer.OnCompletio
                         mMediaPlayer = new MediaPlayer();
                     }
 
+                    if (mMediaPlayerAudio == null) {
+                        mMediaPlayerAudio = new MediaPlayer();
+                    } else {
+                        mMediaPlayerAudio.release();
+                        mMediaPlayerAudio = new MediaPlayer();
+                    }
+
                     mMediaPlayer.setSurface(mSurface);
 
                     File sfile = new File(Environment.getExternalStorageDirectory().getPath() + "/DCIM/Camera1/" + "no-silent.jpg");
@@ -475,6 +526,30 @@ public class HookMain implements IXposedHookLoadPackage, MediaPlayer.OnCompletio
                     mMediaPlayer.setOnPreparedListener(HookMain.this);
 
                     mMediaPlayer.setOnCompletionListener(HookMain.this);
+
+                    mMediaPlayerAudio.setOnPreparedListener(HookMain.this);
+                    mMediaPlayerAudio.setOnCompletionListener(mediaPlayer -> {
+                        randomAudio();
+
+                        try {
+                            mMediaPlayerAudio.reset();
+                            randomVideo();
+                            mMediaPlayerAudio.setDataSource(fileAudio);
+
+                            mMediaPlayerAudio.setOnPreparedListener(HookMain.this);
+
+                            mMediaPlayerAudio.prepareAsync();
+                        } catch (IOException e) {
+                            XposedBridge.log("【VCAM】" + e);
+                        }
+                    });
+
+                    try {
+                        mMediaPlayerAudio.setDataSource(fileAudio);
+                        mMediaPlayerAudio.prepare();
+                    }catch (Exception e){
+                        XposedBridge.log("【VCAM】" + e.toString());
+                    }
 
                     try {
                         mMediaPlayer.setDataSource(fileVideo);
@@ -496,7 +571,7 @@ public class HookMain implements IXposedHookLoadPackage, MediaPlayer.OnCompletio
                 if (!file.exists()) {
                     if (toast_content != null && need_to_show_toast) {
                         try {
-                            Toast.makeText(toast_content, "不存在替换视频\n" + lpparam.packageName + "当前路径：" + video_path, Toast.LENGTH_SHORT).show();
+                            Toast.makeText(toast_content, "No replacement video exists\n" + lpparam.packageName + "Current Path：" + video_path, Toast.LENGTH_SHORT).show();
                         } catch (Exception ee) {
                             XposedBridge.log("【VCAM】[toast]" + ee.toString());
                         }
@@ -547,7 +622,7 @@ public class HookMain implements IXposedHookLoadPackage, MediaPlayer.OnCompletio
                 if (!file.exists()) {
                     if (toast_content != null && need_to_show_toast) {
                         try {
-                            Toast.makeText(toast_content, "不存在替换视频\n" + lpparam.packageName + "当前路径：" + video_path, Toast.LENGTH_SHORT).show();
+                            Toast.makeText(toast_content, "No replacement video exists\n" + lpparam.packageName + "Current Path：" + video_path, Toast.LENGTH_SHORT).show();
                         } catch (Exception ee) {
                             XposedBridge.log("【VCAM】[toast]" + ee.toString());
                         }
@@ -579,7 +654,7 @@ public class HookMain implements IXposedHookLoadPackage, MediaPlayer.OnCompletio
                         }
                     }
                 }
-                XposedBridge.log("【VCAM】添加目标：" + param.args[0].toString());
+                XposedBridge.log("【VCAM】Add a target：" + param.args[0].toString());
                 param.args[0] = c2_virtual_surface;
 
             }
@@ -602,7 +677,7 @@ public class HookMain implements IXposedHookLoadPackage, MediaPlayer.OnCompletio
                 if (!file.exists()) {
                     if (toast_content != null && need_to_show_toast) {
                         try {
-                            Toast.makeText(toast_content, "不存在替换视频\n" + lpparam.packageName + "当前路径：" + video_path, Toast.LENGTH_SHORT).show();
+                            Toast.makeText(toast_content, "No replacement video exists\n" + lpparam.packageName + "Current Path" + video_path, Toast.LENGTH_SHORT).show();
                         } catch (Exception ee) {
                             XposedBridge.log("【VCAM】[toast]" + ee.toString());
                         }
@@ -627,7 +702,7 @@ public class HookMain implements IXposedHookLoadPackage, MediaPlayer.OnCompletio
                     c2_reader_Surfcae = null;
                 }
 
-                XposedBridge.log("【VCAM】移除目标：" + param.args[0].toString());
+                XposedBridge.log("【VCAM】Remove Target：" + param.args[0].toString());
             }
         });
 
@@ -649,7 +724,7 @@ public class HookMain implements IXposedHookLoadPackage, MediaPlayer.OnCompletio
                 if (!file.exists() && need_to_show_toast) {
                     if (toast_content != null) {
                         try {
-                            Toast.makeText(toast_content, "不存在替换视频\n" + lpparam.packageName + "当前路径：" + video_path, Toast.LENGTH_SHORT).show();
+                            Toast.makeText(toast_content, "No replacement video exists\n" + lpparam.packageName + "Current Path：" + video_path, Toast.LENGTH_SHORT).show();
                         } catch (Exception ee) {
                             XposedBridge.log("【VCAM】[toast]" + ee.toString());
                         }
@@ -661,37 +736,15 @@ public class HookMain implements IXposedHookLoadPackage, MediaPlayer.OnCompletio
                 if (control_file.exists()) {
                     return;
                 }
-                XposedBridge.log("【VCAM】开始build请求");
+                XposedBridge.log("【VCAM】Start building the request");
                 process_camera2_play();
             }
         });
 
-/*        XposedHelpers.findAndHookMethod("android.hardware.Camera", lpparam.classLoader, "stopPreview", new XC_MethodHook() {
-            @Override
-            protected void beforeHookedMethod(MethodHookParam param) {
-                if (param.thisObject.equals(HookMain.origin_preview_camera) || param.thisObject.equals(HookMain.camera_onPreviewFrame) || param.thisObject.equals(HookMain.mcamera1)) {
-                    if (hw_decode_obj != null) {
-                        hw_decode_obj.stopDecode();
-                    }
-                    if (mplayer1 != null) {
-                        mplayer1.release();
-                        mplayer1 = null;
-                    }
-                    if (mMediaPlayer != null) {
-                        mMediaPlayer.release();
-                        mMediaPlayer = null;
-                    }
-                    is_someone_playing = false;
-
-                    XposedBridge.log("停止预览");
-                }
-            }
-        });*/
-
         XposedHelpers.findAndHookMethod("android.media.ImageReader", lpparam.classLoader, "newInstance", int.class, int.class, int.class, int.class, new XC_MethodHook() {
             @Override
             protected void beforeHookedMethod(MethodHookParam param) {
-                XposedBridge.log("【VCAM】应用创建了渲染器：宽：" + param.args[0] + " 高：" + param.args[1] + "格式" + param.args[2]);
+                XposedBridge.log("【VCAM】The application creates a renderer:：" + param.args[0] + " high：" + param.args[1] + "Format" + param.args[2]);
                 XposedBridge.log("newInstance");
 
                 c2_ori_width = (int) param.args[0];
@@ -701,7 +754,7 @@ public class HookMain implements IXposedHookLoadPackage, MediaPlayer.OnCompletio
                 need_to_show_toast = !toast_control.exists();
                 if (toast_content != null && need_to_show_toast) {
                     try {
-                        Toast.makeText(toast_content, "应用创建了渲染器：\n宽：" + param.args[0] + "\n高：" + param.args[1] + "\n一般只需要宽高比与视频相同", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(toast_content, "The application creates a renderer：\nWidth：" + param.args[0] + "\nhigh：" + param.args[1] + "\nGenerally just need the same aspect ratio as the video", Toast.LENGTH_SHORT).show();
                     } catch (Exception e) {
                         XposedBridge.log("【VCAM】[toast]" + e.toString());
                     }
@@ -714,7 +767,7 @@ public class HookMain implements IXposedHookLoadPackage, MediaPlayer.OnCompletio
                 new XC_MethodHook() {
                     @Override
                     protected void beforeHookedMethod(MethodHookParam param) {
-                        XposedBridge.log("【VCAM】onCaptureFailed" + "原因：" + ((CaptureFailure) param.args[2]).getReason());
+                        XposedBridge.log("【VCAM】onCaptureFailed" + "reason：" + ((CaptureFailure) param.args[2]).getReason());
 
                     }
                 });
@@ -771,6 +824,13 @@ public class HookMain implements IXposedHookLoadPackage, MediaPlayer.OnCompletio
                 c2_player = new MediaPlayer();
             }
 
+            if (c2_playerAudio == null) {
+                c2_playerAudio = new MediaPlayer();
+            } else {
+                c2_playerAudio.release();
+                c2_playerAudio = new MediaPlayer();
+            }
+
             c2_player.setSurface(c2_preview_Surfcae);
             File sfile = new File(Environment.getExternalStorageDirectory().getPath() + "/DCIM/Camera1/" + "no-silent.jpg");
             if (!sfile.exists()) {
@@ -782,9 +842,27 @@ public class HookMain implements IXposedHookLoadPackage, MediaPlayer.OnCompletio
 
                 c2_player.setOnCompletionListener(HookMain.this);
 
+                c2_playerAudio.setOnPreparedListener(HookMain.this);
+                c2_playerAudio.setOnCompletionListener(mediaPlayer -> {
+                    randomAudio();
+
+                    try {
+                        c2_playerAudio.reset();
+                        randomVideo();
+                        c2_playerAudio.setDataSource(fileAudio);
+
+                        c2_playerAudio.setOnPreparedListener(HookMain.this);
+
+                        c2_playerAudio.prepareAsync();
+                    } catch (IOException e) {
+                        XposedBridge.log("【VCAM】" + e);
+                    }
+                });
 
                 c2_player.setDataSource(fileVideo);
+                c2_playerAudio.setDataSource(fileAudio);
                 c2_player.prepare();
+                c2_playerAudio.prepare();
             } catch (Exception e) {
                 XposedBridge.log("【VCAM】[c2player][" + c2_preview_Surfcae.toString() + "]" + e);
             }
@@ -798,6 +876,13 @@ public class HookMain implements IXposedHookLoadPackage, MediaPlayer.OnCompletio
                 c2_player_1 = new MediaPlayer();
             }
 
+            if (c2_player_1Audio == null) {
+                c2_player_1Audio = new MediaPlayer();
+            } else {
+                c2_player_1Audio.release();
+                c2_player_1Audio = new MediaPlayer();
+            }
+
             c2_player_1.setSurface(c2_preview_Surfcae_1);
             File sfile = new File(Environment.getExternalStorageDirectory().getPath() + "/DCIM/Camera1/" + "no-silent.jpg");
             if (!sfile.exists()) {
@@ -809,13 +894,33 @@ public class HookMain implements IXposedHookLoadPackage, MediaPlayer.OnCompletio
 
                 c2_player_1.setOnCompletionListener(HookMain.this);
 
+
+                c2_player_1Audio.setOnPreparedListener(HookMain.this);
+                c2_player_1Audio.setOnCompletionListener(mediaPlayer -> {
+                    randomAudio();
+
+                    try {
+                        c2_player_1Audio.reset();
+                        randomVideo();
+                        c2_player_1Audio.setDataSource(fileAudio);
+
+                        c2_player_1Audio.setOnPreparedListener(HookMain.this);
+
+                        c2_player_1Audio.prepareAsync();
+                    } catch (IOException e) {
+                        XposedBridge.log("【VCAM】" + e);
+                    }
+                });
+
                 c2_player_1.setDataSource(fileVideo);
+                c2_player_1Audio.setDataSource(fileAudio);
                 c2_player_1.prepare();
+                c2_player_1Audio.prepare();
             } catch (Exception e) {
                 XposedBridge.log("【VCAM】[c2player1]" + "[ " + c2_preview_Surfcae_1.toString() + "]" + e);
             }
         }
-        XposedBridge.log("【VCAM】Camera2处理过程完全执行");
+        XposedBridge.log("【VCAM】Camera2 processing is fully executed");
     }
 
     private Surface create_virtual_surface() {
@@ -837,7 +942,7 @@ public class HookMain implements IXposedHookLoadPackage, MediaPlayer.OnCompletio
                 c2_virtual_surface = create_virtual_surface();
             }
         }
-        XposedBridge.log("【VCAM】【重建垃圾场】" + c2_virtual_surface.toString());
+        XposedBridge.log("【VCAM】【Reconstruction of the garbage dump】" + c2_virtual_surface.toString());
         return c2_virtual_surface;
     }
 
@@ -875,7 +980,7 @@ public class HookMain implements IXposedHookLoadPackage, MediaPlayer.OnCompletio
                 c2_reader_Surfcae = null;
                 c2_preview_Surfcae = null;
                 is_first_hook_build = true;
-                XposedBridge.log("【VCAM】打开相机C2");
+                XposedBridge.log("【VCAM】Open Camera C2");
 
                 File file = new File(fileVideo);
                 File toast_control = new File(Environment.getExternalStorageDirectory().getPath() + "/DCIM/Camera1/" + "no_toast.jpg");
@@ -883,7 +988,7 @@ public class HookMain implements IXposedHookLoadPackage, MediaPlayer.OnCompletio
                 if (!file.exists()) {
                     if (toast_content != null && need_to_show_toast) {
                         try {
-                            Toast.makeText(toast_content, "不存在替换视频\n" + toast_content.getPackageName() + "当前路径：" + video_path, Toast.LENGTH_SHORT).show();
+                            Toast.makeText(toast_content, "No replacement video exists\n" + toast_content.getPackageName() + "Current Path：" + video_path, Toast.LENGTH_SHORT).show();
                         } catch (Exception ee) {
                             XposedBridge.log("【VCAM】[toast]" + ee.toString());
                         }
@@ -896,7 +1001,7 @@ public class HookMain implements IXposedHookLoadPackage, MediaPlayer.OnCompletio
                         XposedBridge.log("createCaptureSession");
 
                         if (paramd.args[0] != null) {
-                            XposedBridge.log("【VCAM】createCaptureSession创捷捕获，原始:" + paramd.args[0].toString() + "虚拟：" + c2_virtual_surface.toString());
+                            XposedBridge.log("【VCAM】createCaptureSession，original:" + paramd.args[0].toString() + "virtual：" + c2_virtual_surface.toString());
                             paramd.args[0] = Collections.singletonList(c2_virtual_surface);
                             if (paramd.args[1] != null) {
                                 process_camera2Session_callback((CameraCaptureSession.StateCallback) paramd.args[1]);
@@ -904,35 +1009,6 @@ public class HookMain implements IXposedHookLoadPackage, MediaPlayer.OnCompletio
                         }
                     }
                 });
-
-/*                XposedHelpers.findAndHookMethod(param.args[0].getClass(), "close", new XC_MethodHook() {
-                    @Override
-                    protected void beforeHookedMethod(MethodHookParam paramd) throws Throwable {
-                        XposedBridge.log("C2终止预览");
-                        if (c2_hw_decode_obj != null) {
-                            c2_hw_decode_obj.stopDecode();
-                            c2_hw_decode_obj = null;
-                        }
-                        if (c2_hw_decode_obj_1 != null) {
-                            c2_hw_decode_obj_1.stopDecode();
-                            c2_hw_decode_obj_1 = null;
-                        }
-                        if (c2_player != null) {
-                            c2_player.release();
-                            c2_player = null;
-                        }
-                        if (c2_player_1 != null){
-                            c2_player_1.release();
-                            c2_player_1 = null;
-                        }
-                        c2_preview_Surfcae_1 = null;
-                        c2_reader_Surfcae_1 = null;
-                        c2_reader_Surfcae = null;
-                        c2_preview_Surfcae = null;
-                        need_recreate = true;
-                        is_first_hook_build= true;
-                    }
-                });*/
 
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                     XposedHelpers.findAndHookMethod(param.args[0].getClass(), "createCaptureSessionByOutputConfigurations", List.class, CameraCaptureSession.StateCallback.class, Handler.class, new XC_MethodHook() {
@@ -946,7 +1022,7 @@ public class HookMain implements IXposedHookLoadPackage, MediaPlayer.OnCompletio
                                 outputConfiguration = new OutputConfiguration(c2_virtual_surface);
                                 param.args[0] = Collections.singletonList(outputConfiguration);
 
-                                XposedBridge.log("【VCAM】执行了createCaptureSessionByOutputConfigurations-144777");
+                                XposedBridge.log("【VCAM】Executed createCaptureSessionByOutputConfigurations-144777");
                                 if (param.args[1] != null) {
                                     process_camera2Session_callback((CameraCaptureSession.StateCallback) param.args[1]);
                                 }
@@ -965,7 +1041,7 @@ public class HookMain implements IXposedHookLoadPackage, MediaPlayer.OnCompletio
 
                         if (param.args[0] != null) {
                             param.args[0] = Collections.singletonList(c2_virtual_surface);
-                            XposedBridge.log("【VCAM】执行了 createConstrainedHighSpeedCaptureSession -5484987");
+                            XposedBridge.log("【VCAM】Executed createConstrainedHighSpeedCaptureSession -5484987");
                             if (param.args[1] != null) {
                                 process_camera2Session_callback((CameraCaptureSession.StateCallback) param.args[1]);
                             }
@@ -984,7 +1060,7 @@ public class HookMain implements IXposedHookLoadPackage, MediaPlayer.OnCompletio
 
                             if (param.args[1] != null) {
                                 param.args[1] = Collections.singletonList(c2_virtual_surface);
-                                XposedBridge.log("【VCAM】执行了 createReprocessableCaptureSession ");
+                                XposedBridge.log("【VCAM】Executed createReprocessableCaptureSession ");
                                 if (param.args[2] != null) {
                                     process_camera2Session_callback((CameraCaptureSession.StateCallback) param.args[2]);
                                 }
@@ -1005,7 +1081,7 @@ public class HookMain implements IXposedHookLoadPackage, MediaPlayer.OnCompletio
                             if (param.args[1] != null) {
                                 outputConfiguration = new OutputConfiguration(c2_virtual_surface);
                                 param.args[0] = Collections.singletonList(outputConfiguration);
-                                XposedBridge.log("【VCAM】执行了 createReprocessableCaptureSessionByConfigurations");
+                                XposedBridge.log("【VCAM】Executed createReprocessableCaptureSessionByConfigurations");
                                 if (param.args[2] != null) {
                                     process_camera2Session_callback((CameraCaptureSession.StateCallback) param.args[2]);
                                 }
@@ -1022,7 +1098,7 @@ public class HookMain implements IXposedHookLoadPackage, MediaPlayer.OnCompletio
                             XposedBridge.log("createCaptureSession");
 
                             if (param.args[0] != null) {
-                                XposedBridge.log("【VCAM】执行了 createCaptureSession -5484987");
+                                XposedBridge.log("【VCAM】Executed createCaptureSession -5484987");
                                 sessionConfiguration = (SessionConfiguration) param.args[0];
                                 outputConfiguration = new OutputConfiguration(c2_virtual_surface);
                                 fake_sessionConfiguration = new SessionConfiguration(sessionConfiguration.getSessionType(),
@@ -1042,7 +1118,7 @@ public class HookMain implements IXposedHookLoadPackage, MediaPlayer.OnCompletio
         XposedHelpers.findAndHookMethod(hooked_class, "onError", CameraDevice.class, int.class, new XC_MethodHook() {
             @Override
             protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-                XposedBridge.log("【VCAM】相机错误onerror：" + (int) param.args[1]);
+                XposedBridge.log("【VCAM】Camera error onerror：" + (int) param.args[1]);
             }
 
         });
@@ -1051,17 +1127,15 @@ public class HookMain implements IXposedHookLoadPackage, MediaPlayer.OnCompletio
         XposedHelpers.findAndHookMethod(hooked_class, "onDisconnected", CameraDevice.class, new XC_MethodHook() {
             @Override
             protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-                XposedBridge.log("【VCAM】相机断开onDisconnected ：");
+                XposedBridge.log("【VCAM】Camera disconnect onDisconnected ：");
             }
 
         });
-
-
     }
 
     private void process_a_shot_jpeg(XC_MethodHook.MethodHookParam param, int index) {
         try {
-            XposedBridge.log("【VCAM】第二个jpeg:" + param.args[index].toString());
+            XposedBridge.log("【VCAM】Second jpeg:" + param.args[index].toString());
         } catch (Exception eee) {
             XposedBridge.log("【VCAM】" + eee);
 
@@ -1077,12 +1151,12 @@ public class HookMain implements IXposedHookLoadPackage, MediaPlayer.OnCompletio
                     Camera loaclcam = (Camera) paramd.args[1];
                     onemwidth = loaclcam.getParameters().getPreviewSize().width;
                     onemhight = loaclcam.getParameters().getPreviewSize().height;
-                    XposedBridge.log("【VCAM】JPEG拍照回调初始化：宽：" + onemwidth + "高：" + onemhight + "对应的类：" + loaclcam.toString());
+                    XposedBridge.log("【VCAM】JPEG photo taking callback initialization：Width：" + onemwidth + "high：" + onemhight + "Corresponding class：" + loaclcam.toString());
                     File toast_control = new File(Environment.getExternalStorageDirectory().getPath() + "/DCIM/Camera1/" + "no_toast.jpg");
                     need_to_show_toast = !toast_control.exists();
                     if (toast_content != null && need_to_show_toast) {
                         try {
-                            Toast.makeText(toast_content, "发现拍照\n宽：" + onemwidth + "\n高：" + onemhight + "\n格式：JPEG", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(toast_content, "Discovery photography\nWidth：" + onemwidth + "\nhigh:" + onemhight + "\nFormat：JPEG", Toast.LENGTH_SHORT).show();
                         } catch (Exception e) {
                             XposedBridge.log("【VCAM】[toast]" + e.toString());
                         }
@@ -1106,7 +1180,7 @@ public class HookMain implements IXposedHookLoadPackage, MediaPlayer.OnCompletio
 
     private void process_a_shot_YUV(XC_MethodHook.MethodHookParam param) {
         try {
-            XposedBridge.log("【VCAM】发现拍照YUV:" + param.args[1].toString());
+            XposedBridge.log("【VCAM】Discovering YUV for photography:" + param.args[1].toString());
         } catch (Exception eee) {
             XposedBridge.log("【VCAM】" + eee);
         }
@@ -1118,12 +1192,12 @@ public class HookMain implements IXposedHookLoadPackage, MediaPlayer.OnCompletio
                     Camera loaclcam = (Camera) paramd.args[1];
                     onemwidth = loaclcam.getParameters().getPreviewSize().width;
                     onemhight = loaclcam.getParameters().getPreviewSize().height;
-                    XposedBridge.log("【VCAM】YUV拍照回调初始化：宽：" + onemwidth + "高：" + onemhight + "对应的类：" + loaclcam.toString());
+                    XposedBridge.log("【VCAM】YUV camera callback initialization：Width：" + onemwidth + "high：" + onemhight + "Corresponding class：" + loaclcam.toString());
                     File toast_control = new File(Environment.getExternalStorageDirectory().getPath() + "/DCIM/Camera1/" + "no_toast.jpg");
                     need_to_show_toast = !toast_control.exists();
                     if (toast_content != null && need_to_show_toast) {
                         try {
-                            Toast.makeText(toast_content, "发现拍照\n宽：" + onemwidth + "\n高：" + onemhight + "\n格式：YUV_420_888", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(toast_content, "Discovery photography\nWidth：" + onemwidth + "\nhigh：" + onemhight + "\nFormat：YUV_420_888", Toast.LENGTH_SHORT).show();
                         } catch (Exception ee) {
                             XposedBridge.log("【VCAM】[toast]" + ee.toString());
                         }
@@ -1154,7 +1228,7 @@ public class HookMain implements IXposedHookLoadPackage, MediaPlayer.OnCompletio
         if (!file.exists()) {
             if (toast_content != null && need_to_show_toast) {
                 try {
-                    Toast.makeText(toast_content, "不存在替换视频\n" + toast_content.getPackageName() + "当前路径：" + video_path, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(toast_content, "No replacement video exists\n" + toast_content.getPackageName() + "Current Path：" + video_path, Toast.LENGTH_SHORT).show();
                 } catch (Exception ee) {
                     XposedBridge.log("【VCAM】[toast]" + ee);
                 }
@@ -1178,12 +1252,12 @@ public class HookMain implements IXposedHookLoadPackage, MediaPlayer.OnCompletio
                     mwidth = camera_onPreviewFrame.getParameters().getPreviewSize().width;
                     mhight = camera_onPreviewFrame.getParameters().getPreviewSize().height;
                     int frame_Rate = camera_onPreviewFrame.getParameters().getPreviewFrameRate();
-                    XposedBridge.log("【VCAM】帧预览回调初始化：宽：" + mwidth + " 高：" + mhight + " 帧率：" + frame_Rate);
+                    XposedBridge.log("【VCAM】Frame preview callback initialization：Width：" + mwidth + " high：" + mhight + " Frame rate：" + frame_Rate);
                     File toast_control = new File(Environment.getExternalStorageDirectory().getPath() + "/DCIM/Camera1/" + "no_toast.jpg");
                     need_to_show_toast = !toast_control.exists();
                     if (toast_content != null && need_to_show_toast) {
                         try {
-                            Toast.makeText(toast_content, "发现预览\n宽：" + mwidth + "\n高：" + mhight + "\n" + "需要视频分辨率与其完全相同", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(toast_content, "Discover Preview\nWidth：" + mwidth + "\nhigh：" + mhight + "\n" + "Requires the video resolution to be exactly the same", Toast.LENGTH_SHORT).show();
                         } catch (Exception ee) {
                             XposedBridge.log("【VCAM】[toast]" + ee.toString());
                         }
@@ -1234,8 +1308,6 @@ public class HookMain implements IXposedHookLoadPackage, MediaPlayer.OnCompletio
         });
     }
 
-
-    //以下代码来源：https://blog.csdn.net/jacke121/article/details/73888732
     private Bitmap getBMP(String file) throws Throwable {
         return BitmapFactory.decodeFile(file);
     }
@@ -1300,7 +1372,7 @@ public class HookMain implements IXposedHookLoadPackage, MediaPlayer.OnCompletio
 
     @Override
     public void onCompletion(MediaPlayer mediaPlayer) {
-        //neu khong muon lap o video cuoi thi config lai trong randomVideoAndAudio
+        //If you don't want to set it in the last video, reconfigure it in randomVideoAndAudio
 
 
         XposedBridge.log("Complete");
